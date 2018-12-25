@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FirstdataActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:id= "@+id/yearspinner"></Spinner>
+
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:id= "@+id/brandspinner"></Spinner>
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:id= "@+id/modelspinner"></Spinner>
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:id= "@+id/carclassspinner"></Spinner>
+
+        <EditText
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text = "First Name"
+        android:id="@+id/firstname"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text = "Last Name"
+            android:id="@+id/lastname"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text = "Agee"
+            android:id="@+id/age"
+            />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="SUBMIT"
+            android:id="@+id/submitbutton"/>
+
+
+
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

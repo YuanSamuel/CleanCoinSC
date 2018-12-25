@@ -19,10 +19,17 @@ public class CleanCoinDBHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "DB_CLEANCOIN";
     private static final int DATABASE_VERSION = 1;
     public static final String CARDATA_TABLE_NAME = "TBL_CARDATA";
+    public static final String USERS_TABLE_NAME = "TBL_USERDATA";
 
+    private static final String USERS_TABLE_CREATE =
+            "CREATE TABLE " + USERS_TABLE_NAME + " (" +
+                    "ID" + " TEXT primary key, " +
+                    "CARID" + " TEXT, " +
+                    "FIRSTNAME" + " TEXT, " +
+                    "LASTNAME" + " TEXT, " +
+                    "AGE" + " INT);";
 
-
-    private static final String FORMULAE_TABLE_CREATE =
+    private static final String CARDATA_TABLE_CREATE =
             "CREATE TABLE " + CARDATA_TABLE_NAME + " (" +
                     "ID" + " TEXT primary key, " +
                     "YEAR" + " INT, " +
@@ -46,7 +53,8 @@ public class CleanCoinDBHelper extends SQLiteOpenHelper {
     //create tables below
     @Override
     public void onCreate(SQLiteDatabase db){
-        db.execSQL(FORMULAE_TABLE_CREATE);
+        db.execSQL(CARDATA_TABLE_CREATE);
+        db.execSQL(USERS_TABLE_CREATE);
         try{
             loadCarData(db);
         }
@@ -59,6 +67,7 @@ public class CleanCoinDBHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i2) {
         db.execSQL("DROP TABLE IF EXISTS " + CARDATA_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + USERS_TABLE_NAME);
         onCreate(db);
     }
 

@@ -26,5 +26,11 @@ public class Car {
 
     }
 
+    public String toString(){
+
+        return year+brand+model+carclass+enginesize+cylinders+transmission+fueltype+highwayconsumption+cityconsumption+combinedconsuption+combinedmpg+emmissions;
+    }
+
+
 
 }

@@ -1,9 +1,11 @@
 package com.stringcheesedevs.cleancoin;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.stringcheesedevs.cleancoin.Models.Car;
 import com.stringcheesedevs.cleancoin.Persistence.CleanCoinDAO;
@@ -41,6 +43,7 @@ public class DashboardActivity extends AppCompatActivity {
             "2018 data.out"
     };
     private CleanCoinDAO datasource=null;
+    private TextView testmessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,12 +54,17 @@ public class DashboardActivity extends AppCompatActivity {
         datasource = new CleanCoinDAO(this.getApplicationContext());
         datasource.open();
 
+        if(!datasource.isSignedIn()){
+            initialDisplay();
+        }
         //Do this to get all occurences of a specific type of data, eg. this example returns a list of all the years in the data
-        datasource.getAllUniques(1);
+        //datasource.getAllUniques(1);
         //Enter in a specific set of details, shown below, and get specific answer based on allColumns list index
-        datasource.getCarStat(2004,"AUDI","A4 AVANT QUATTRO","STATION WAGON - SMALL",12);
+        //datasource.getCarStat(2004,"AUDI","A4 AVANT QUATTRO","STATION WAGON - SMALL",12);
         //Gets the complete list of Car objects
-        datasource.getAllCarData();
+        //datasource.getAllCarData();
+        testmessage = findViewById(R.id.testmessage);
+        testmessage.setText(datasource.getUserCar().toString());
     }
 
     public ArrayList<Car> loadCarsData() throws IOException {
@@ -72,4 +80,10 @@ public class DashboardActivity extends AppCompatActivity {
         }
         return cs;
     }
+
+    public void initialDisplay(){
+        Intent intent1 = new Intent(this,FirstdataActivity.class);
+        startActivity(intent1);
+    }
+
 }
