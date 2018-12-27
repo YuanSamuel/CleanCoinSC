@@ -338,4 +338,28 @@ public class CleanCoinDAO{
         // return the list of records
         return temp;
     }
+
+    public User getUser(){
+        database = dbHelper.getWritableDatabase();
+        User u = new User();
+        u.car = getUserCar();
+        String sql = "";
+        sql += "SELECT * FROM " + dbHelper.USERS_TABLE_NAME;
+        // execute the query
+        Cursor cursor = database.rawQuery(sql, null) ;
+        Car c  = new Car();
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            // int productId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(fieldProductId)));
+            u.firstname = cursor.getString(cursor.getColumnIndex("FIRSTNAME"));
+            u.lastname = cursor.getString(cursor.getColumnIndex("LASTNAME"));
+            u.age = Integer.parseInt(cursor.getString(cursor.getColumnIndex("AGE")));
+
+
+        }
+        database.close();
+        return u;
+
+    }
 }
