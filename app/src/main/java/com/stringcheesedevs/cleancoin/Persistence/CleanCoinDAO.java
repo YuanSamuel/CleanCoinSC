@@ -269,9 +269,7 @@ public class CleanCoinDAO{
             s =cursor.getString(cursor.getColumnIndex(allColumns[0]));
 
         }
-
         cursor.close();
-
         // return the list of records
         return getCarFromID(s);
     }
