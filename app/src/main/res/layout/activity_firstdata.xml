@@ -45,11 +45,10 @@
             android:id="@+id/lastname"/>
 
         <EditText
+            android:id="@+id/age"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:text = "Agee"
-            android:id="@+id/age"
-            />
+            android:text="Age" />
 
         <Button
             android:layout_width="match_parent"

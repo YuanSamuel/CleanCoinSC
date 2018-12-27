@@ -50,7 +50,6 @@ public class DashboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
         tempcontext = getApplicationContext();
-
         datasource = new CleanCoinDAO(this.getApplicationContext());
         datasource.open();
 
