@@ -2,7 +2,7 @@ package com.stringcheesedevs.cleancoin.Models;
 
 public class User {
 
-    public String carID;
+    public Car car;
     public String firstname;
     public String lastname;
     public int age;

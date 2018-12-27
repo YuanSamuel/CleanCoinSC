@@ -250,7 +250,10 @@ public class CleanCoinDAO{
         values.put("ID",id);
         values.put("FIRSTNAME",user.firstname);
         values.put("LASTNAME",user.lastname);
-        values.put("CARID",user.carID);
+        values.put("YEAR",user.car.year);
+        values.put("BRAND",user.car.brand);
+        values.put("MODEL",user.car.model);
+        values.put("CARCLASS",user.car.carclass);
         values.put("AGE",user.age);
         long insertID = database.insert(CleanCoinDBHelper.USERS_TABLE_NAME, null, values);
         database.close();
@@ -261,17 +264,32 @@ public class CleanCoinDAO{
         sql += "SELECT * FROM " + dbHelper.USERS_TABLE_NAME;
         // execute the query
         Cursor cursor = database.rawQuery(sql, null) ;
-        String s = "";
+        Car c  = new Car();
 
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             // int productId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(fieldProductId)));
-            s =cursor.getString(cursor.getColumnIndex(allColumns[0]));
+            c.year = Integer.parseInt(cursor.getString(cursor.getColumnIndex(allColumns[1])));
+            c.brand = cursor.getString(cursor.getColumnIndex(allColumns[2]));
+            c.model = cursor.getString(cursor.getColumnIndex(allColumns[3]));
+            c.carclass = cursor.getString(cursor.getColumnIndex(allColumns[4]));
+            
 
         }
+        c.enginesize = Double.parseDouble(getCarStat(c.year,c.brand,c.model,c.carclass,5,1));
+        c.cylinders = Integer.parseInt(getCarStat(c.year,c.brand,c.model,c.carclass,5,1));
+        c.transmission = getCarStat(c.year,c.brand,c.model,c.carclass,5,1);
+        c.fueltype = getCarStat(c.year,c.brand,c.model,c.carclass,5,1);
+        c.highwayconsumption = Double.parseDouble(getCarStat(c.year,c.brand,c.model,c.carclass,5,1));
+        c.cityconsumption = Double.parseDouble(getCarStat(c.year,c.brand,c.model,c.carclass,5,1));
+        c.combinedconsuption = Double.parseDouble(getCarStat(c.year,c.brand,c.model,c.carclass,5,1));
+        c.combinedmpg = Integer.parseInt(getCarStat(c.year,c.brand,c.model,c.carclass,5,1));
+        c.emmissions = Integer.parseInt(getCarStat(c.year,c.brand,c.model,c.carclass,5,1));
+
         cursor.close();
         // return the list of records
-        return getCarFromID(s);
+
+        return c;
     }
 
     public boolean isSignedIn() {

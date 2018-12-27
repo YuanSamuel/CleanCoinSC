@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.stringcheesedevs.cleancoin.Models.Car;
 import com.stringcheesedevs.cleancoin.Models.User;
 import com.stringcheesedevs.cleancoin.Persistence.CleanCoinDAO;
 
@@ -144,7 +145,12 @@ public class FirstdataActivity extends AppCompatActivity implements AdapterView.
                 classspin.setOnItemSelectedListener(this);
                 break;
             case R.id.carclassspinner:
-                user.carID = datasource.getCarStat(year,brand,model,classes.get(position),0,1);
+                Car tempcar = new Car();
+                tempcar.year = year;
+                tempcar.brand = brand;
+                tempcar.model = model;
+                tempcar.carclass = classes.get(position);
+                user.car = tempcar;
                 break;
             default:
                 break;

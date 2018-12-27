@@ -24,7 +24,10 @@ public class CleanCoinDBHelper extends SQLiteOpenHelper {
     private static final String USERS_TABLE_CREATE =
             "CREATE TABLE " + USERS_TABLE_NAME + " (" +
                     "ID" + " TEXT primary key, " +
-                    "CARID" + " TEXT, " +
+                    "YEAR" + " INT, " +
+                    "BRAND" + " TEXT, " +
+                    "MODEL" + " TEXT, " +
+                    "CARCLASS" + " TEXT, " +
                     "FIRSTNAME" + " TEXT, " +
                     "LASTNAME" + " TEXT, " +
                     "AGE" + " INT);";
