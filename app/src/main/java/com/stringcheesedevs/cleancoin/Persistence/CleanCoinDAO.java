@@ -277,14 +277,14 @@ public class CleanCoinDAO{
 
         }
         c.enginesize = Double.parseDouble(getCarStat(c.year,c.brand,c.model,c.carclass,5,1));
-        c.cylinders = Integer.parseInt(getCarStat(c.year,c.brand,c.model,c.carclass,5,1));
-        c.transmission = getCarStat(c.year,c.brand,c.model,c.carclass,5,1);
-        c.fueltype = getCarStat(c.year,c.brand,c.model,c.carclass,5,1);
-        c.highwayconsumption = Double.parseDouble(getCarStat(c.year,c.brand,c.model,c.carclass,5,1));
-        c.cityconsumption = Double.parseDouble(getCarStat(c.year,c.brand,c.model,c.carclass,5,1));
-        c.combinedconsuption = Double.parseDouble(getCarStat(c.year,c.brand,c.model,c.carclass,5,1));
-        c.combinedmpg = Integer.parseInt(getCarStat(c.year,c.brand,c.model,c.carclass,5,1));
-        c.emmissions = Integer.parseInt(getCarStat(c.year,c.brand,c.model,c.carclass,5,1));
+        c.cylinders = Integer.parseInt(getCarStat(c.year,c.brand,c.model,c.carclass,6,1));
+        c.transmission = getCarStat(c.year,c.brand,c.model,c.carclass,7,1);
+        c.fueltype = getCarStat(c.year,c.brand,c.model,c.carclass,8,1);
+        c.highwayconsumption = Double.parseDouble(getCarStat(c.year,c.brand,c.model,c.carclass,9,1));
+        c.cityconsumption = Double.parseDouble(getCarStat(c.year,c.brand,c.model,c.carclass,10,1));
+        c.combinedconsuption = Double.parseDouble(getCarStat(c.year,c.brand,c.model,c.carclass,11,1));
+        c.combinedmpg = Integer.parseInt(getCarStat(c.year,c.brand,c.model,c.carclass,12,1));
+        c.emmissions = Integer.parseInt(getCarStat(c.year,c.brand,c.model,c.carclass,13,1));
 
         cursor.close();
         // return the list of records
