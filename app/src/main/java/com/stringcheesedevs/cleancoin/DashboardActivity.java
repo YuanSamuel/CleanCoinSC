@@ -9,6 +9,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +20,7 @@ import com.google.android.gms.location.LocationServices;
 import com.stringcheesedevs.cleancoin.Models.Car;
 import com.stringcheesedevs.cleancoin.Persistence.CleanCoinDAO;
 import com.stringcheesedevs.cleancoin.Persistence.CleanCoinDBHelper;
+import com.stringcheesedevs.cleancoin.TestChain.StoreActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,11 +30,30 @@ public class DashboardActivity extends AppCompatActivity {
     //Sample data set
     //2004,AUDI,A4 AVANT QUATTRO,STATION WAGON - SMALL,1.8,4,AS5,Z,13.2,9,11.3,25,260
 
+    Button toShop;
+
     public static Context tempcontext;
     public static String[] cardatafiles = {
-            "1995-1999 data.out", "2000 data.out", "2001 data.out", "2002 data.out", "2003 data.out", "2004 data.out",
-            "2005 data.out", "2006 data.out", "2007 data.out", "2008 data.out", "2009 data.out", "2010 data.out", "2011 data.out",
-            "2012 data.out", "2013 data.out", "2014 data.out", "2015 data.out", "2016 data.out", "2017 data.out", "2018 data.out"
+            "1995-1999 data.out",
+            "2000 data.out",
+            "2001 data.out",
+            "2002 data.out",
+            "2003 data.out",
+            "2004 data.out",
+            "2005 data.out",
+            "2006 data.out",
+            "2007 data.out",
+            "2008 data.out",
+            "2009 data.out",
+            "2010 data.out",
+            "2011 data.out",
+            "2012 data.out",
+            "2013 data.out",
+            "2014 data.out",
+            "2015 data.out",
+            "2016 data.out",
+            "2017 data.out",
+            "2018 data.out"
     };
     private CleanCoinDAO datasource=null;
     private TextView testmessage;
@@ -62,6 +84,16 @@ public class DashboardActivity extends AppCompatActivity {
         //datasource.getAllCarData();
         testmessage = findViewById(R.id.testmessage);
         testmessage.setText(datasource.getUserCar().toString());
+
+        toShop = (Button)findViewById(R.id.toshop);
+        toShop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DashboardActivity.this, StoreActivity.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
     public ArrayList<Car> loadCarsData() throws IOException {

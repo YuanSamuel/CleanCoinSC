@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".FirstdataActivity" />
-        <activity android:name=".StoreActivity"></activity>
+        <activity android:name=".TestChain.StoreActivity"></activity>
     </application>
 
 
