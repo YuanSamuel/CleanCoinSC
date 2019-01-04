@@ -20,11 +20,7 @@ public class Trip {
     }
 
     public void addSegment(Segment s){
-        if(segments.size()==0){
-            segments.add(s);
-            current  = (Segment)iterator.next();
-        }
-        else if (current.appendable(s)){
+        if (current.appendable(s) && segments.size() != 0){
             current.appendSegment(s);
         }
         else{
@@ -34,11 +30,13 @@ public class Trip {
     }
 
     public String toString(){
-        String temp = lat+regex+longitude+regex;
+        StringBuilder temp = new StringBuilder();
+        temp.append(lat); temp.append(regex); temp.append(longitude); temp.append(regex);
         for(Segment s: segments){
-            temp+=s.toString()+regex;
+            temp.append(s.toString());
+            temp.append(regex);
         }
-        return temp;
+        return temp.toString();
     }
 
     public static Trip parseTrip(String s){
@@ -50,5 +48,11 @@ public class Trip {
         return trip;
     }
 
-
+    public double getTotalDistTraveled()
+    {
+        int dist = 0;
+        for (int i = 0; i < segments.size(); i++)
+            dist += segments.get(i).distance;
+        return dist;
+    }
 }

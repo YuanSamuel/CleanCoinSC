@@ -15,6 +15,10 @@ public class Car {
     public double highwayconsumption;
     //(L/100km)
     public double cityconsumption;
+    //(mpg)
+    public double highwayMPG;
+    //(mpg)
+    public double cityMPG;
     //(L/100km)
     public double combinedconsuption;
     //(mpg)
@@ -22,7 +26,8 @@ public class Car {
     //(g/km)
     public int emmissions;
 
-    public Car(){
+    public Car()
+    {
 
     }
 
@@ -30,7 +35,10 @@ public class Car {
 
         return year+brand+model+carclass+enginesize+cylinders+transmission+fueltype+highwayconsumption+cityconsumption+combinedconsuption+combinedmpg+emmissions;
     }
-
-
+    public void setMPG()
+    {
+        highwayMPG = 235.215 / highwayconsumption;
+        cityMPG = 235.215 / cityconsumption;
+    }
 
 }

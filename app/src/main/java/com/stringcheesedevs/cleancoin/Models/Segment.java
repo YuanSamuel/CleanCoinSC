@@ -3,11 +3,14 @@ package com.stringcheesedevs.cleancoin.Models;
 import java.util.StringTokenizer;
 
 public class Segment {
+    //distance in feet
     public double distance;
+    //time in seconds
     public double time;
     public double direction;
     public static String regex = ",";
-
+    public boolean onHighway;
+    public static byte poop;
 
     //for now
     public static double dirTolerance = 0.0;
@@ -29,16 +32,18 @@ public class Segment {
     }
 
     public void appendSegment(Segment s){
-        distance +=s.distance;
-        time+=s.time;
+        distance += s.distance;
+        time += s.time;
     }
 
     public boolean appendable(Segment s){
-        return Math.abs(s.getSpeed()-this.getSpeed())<speedTolerance&&Math.abs(this.direction-s.direction)<dirTolerance;
+        return Math.abs(s.getSpeed() - this.getSpeed()) < speedTolerance && Math.abs(this.direction - s.direction) < dirTolerance;
     }
 
     public String toString(){
-        return distance+regex+time+regex+direction;
+        StringBuilder ret = new StringBuilder();
+        ret.append(distance); ret.append(regex); ret.append(time); ret.append(regex); ret.append(direction);
+        return ret.toString();
     }
 
     public static Segment parseSegment(String s){
