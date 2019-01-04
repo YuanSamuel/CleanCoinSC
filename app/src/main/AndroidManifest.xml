@@ -20,4 +20,6 @@
         <activity android:name=".StoreActivity"></activity>
     </application>
 
+
+
 </manifest>
