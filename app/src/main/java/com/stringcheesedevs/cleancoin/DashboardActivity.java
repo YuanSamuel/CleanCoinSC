@@ -34,26 +34,9 @@ public class DashboardActivity extends AppCompatActivity {
 
     public static Context tempcontext;
     public static String[] cardatafiles = {
-            "1995-1999 data.out",
-            "2000 data.out",
-            "2001 data.out",
-            "2002 data.out",
-            "2003 data.out",
-            "2004 data.out",
-            "2005 data.out",
-            "2006 data.out",
-            "2007 data.out",
-            "2008 data.out",
-            "2009 data.out",
-            "2010 data.out",
-            "2011 data.out",
-            "2012 data.out",
-            "2013 data.out",
-            "2014 data.out",
-            "2015 data.out",
-            "2016 data.out",
-            "2017 data.out",
-            "2018 data.out"
+            "1995-1999 data.out", "2000 data.out", "2001 data.out", "2002 data.out", "2003 data.out", "2004 data.out",
+            "2005 data.out", "2006 data.out", "2007 data.out", "2008 data.out", "2009 data.out", "2010 data.out", "2011 data.out",
+            "2012 data.out", "2013 data.out", "2014 data.out", "2015 data.out", "2016 data.out", "2017 data.out", "2018 data.out"
     };
     private CleanCoinDAO datasource=null;
     private TextView testmessage;
