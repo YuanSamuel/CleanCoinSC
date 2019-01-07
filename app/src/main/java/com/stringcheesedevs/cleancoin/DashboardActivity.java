@@ -1,9 +1,12 @@
 package com.stringcheesedevs.cleancoin;
 
 import android.Manifest;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -15,15 +18,25 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.location.ActivityRecognition;
+import com.google.android.gms.location.ActivityTransition;
+import com.google.android.gms.location.ActivityTransitionRequest;
+import com.google.android.gms.location.ActivityTransitionResult;
+import com.google.android.gms.location.DetectedActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.stringcheesedevs.cleancoin.Models.Car;
 import com.stringcheesedevs.cleancoin.Persistence.CleanCoinDAO;
 import com.stringcheesedevs.cleancoin.Persistence.CleanCoinDBHelper;
-import com.stringcheesedevs.cleancoin.TestChain.StoreActivity;
+//import com.stringcheesedevs.cleancoin.TestChain.StoreActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -48,6 +61,7 @@ public class DashboardActivity extends AppCompatActivity {
         GoogleApiAvailability.getInstance().getErrorDialog(this, GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this), 1);
         setContentView(R.layout.activity_dashboard);
         tempcontext = getApplicationContext();
+
       
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
@@ -66,17 +80,62 @@ public class DashboardActivity extends AppCompatActivity {
         //Gets the complete list of Car objects
         //datasource.getAllCarData();
         testmessage = findViewById(R.id.testmessage);
-        testmessage.setText(datasource.getUserCar().toString());
+//        testmessage.setText(datasource.getUserCar().toString());
+//
+//        toShop = (Button)findViewById(R.id.toshop);
+//        toShop.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(DashboardActivity.this, StoreActivity.class);
+//                startActivity(intent);
+//            }
+//        });
 
-        toShop = (Button)findViewById(R.id.toshop);
-        toShop.setOnClickListener(new View.OnClickListener() {
+        List<ActivityTransition> transitions = new ArrayList<>();
+
+        transitions.add(
+                new ActivityTransition.Builder()
+                        .setActivityType(DetectedActivity.WALKING)
+                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
+                        .build());
+
+        transitions.add(
+                new ActivityTransition.Builder()
+                        .setActivityType(DetectedActivity.WALKING)
+                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
+                        .build());
+
+        transitions.add(
+                new ActivityTransition.Builder()
+                        .setActivityType(DetectedActivity.STILL)
+                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
+                        .build());
+
+        transitions.add(
+                new ActivityTransition.Builder()
+                        .setActivityType(DetectedActivity.STILL)
+                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
+                        .build());
+
+        ActivityTransitionRequest request = new ActivityTransitionRequest(transitions);
+        Intent intent = new Intent(this, TransitionBroadcastReceiver.class);
+        intent.setAction(TransitionBroadcastReceiver.INTENT_ACTION);
+        final PendingIntent myPendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Task<Void> task = ActivityRecognition.getClient(this).requestActivityUpdates(3000, myPendingIntent);
+        task.addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(DashboardActivity.this, StoreActivity.class);
-                startActivity(intent);
+            public void onSuccess(Void result)
+            {
+                Log.d("ActivityRecognition", "SUCCESS (although idk what happens if its successful)");
+                myPendingIntent.cancel();
             }
         });
-
+        task.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+               e.printStackTrace();
+            }
+        });
     }
 
     public ArrayList<Car> loadCarsData() throws IOException {
@@ -93,15 +152,9 @@ public class DashboardActivity extends AppCompatActivity {
         return cs;
     }
 
-    public void initialDisplay(){
-        Intent intent1 = new Intent(this,FirstdataActivity.class);
+    public void initialDisplay() {
+        Intent intent1 = new Intent(this, FirstdataActivity.class);
         startActivity(intent1);
-    }
-
-    public void onResume()
-    {
-        super.onResume();
-
     }
 
     public void onRequestPermissionsResult(int requestCode,
@@ -111,7 +164,7 @@ public class DashboardActivity extends AppCompatActivity {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length == 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED)
                 {
-                    Toast toast = Toast.makeText(this, "CleanCoin needs access to you location in order to run properly", Toast.LENGTH_LONG);
+                    Toast toast = Toast.makeText(this, "CleanCoin needs access to your location in order to run properly", Toast.LENGTH_LONG);
                     toast.show();
                 }
                 return;
@@ -121,3 +174,4 @@ public class DashboardActivity extends AppCompatActivity {
         }
     }
 }
+
