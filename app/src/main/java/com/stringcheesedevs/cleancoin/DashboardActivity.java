@@ -1,12 +1,15 @@
 package com.stringcheesedevs.cleancoin;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -21,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.ActivityTransition;
 import com.google.android.gms.location.ActivityTransitionEvent;
@@ -28,7 +32,13 @@ import com.google.android.gms.location.ActivityTransitionRequest;
 import com.google.android.gms.location.ActivityTransitionResult;
 import com.google.android.gms.location.DetectedActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -65,21 +75,26 @@ public class DashboardActivity extends AppCompatActivity {
     private FusedLocationProviderClient mFusedLocationClient;
     private PendingIntent mPendingIntent;
     private TransitionsReceiver mTransitionsReceiver;
-    private final String INTENT_ACTION =
-            "com.stringcheesedevs." + "TRANSITIONS_RECEIVER_ACTION";
-    private TextView action;
+    private final String INTENT_ACTION = "com.stringcheesedevs." + "TRANSITIONS_RECEIVER_ACTION";
+    private TextView actionText;
+    private TextView locationText;
+    private LocationRequest locRequest;
+    private boolean locationOn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         GoogleApiAvailability.getInstance().getErrorDialog(this, GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this), 1);
         setContentView(R.layout.activity_dashboard);
         tempcontext = getApplicationContext();
-        action = (TextView) findViewById(R.id.activityMessage);
-      
+        actionText = (TextView) findViewById(R.id.activityMessage);
+        locationOn = false;
+        locationText = (TextView) findViewById(R.id.locText);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-      
+        else
+            locationOn = true;
         datasource = new CleanCoinDAO(this.getApplicationContext());
         datasource.open();
 
@@ -145,6 +160,7 @@ public class DashboardActivity extends AppCompatActivity {
             // permissions this app might request.
         }
     }
+
     private void setupActivityTransitions() {
         List<ActivityTransition> transitions = new ArrayList<>();
         transitions.add(
@@ -188,12 +204,14 @@ public class DashboardActivity extends AppCompatActivity {
                     }
                 });
     }
+
+
     public class TransitionsReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             if (!TextUtils.equals(INTENT_ACTION, intent.getAction())) {
-                action.setText("Received an unsupported action in TransitionsReceiver: action="
+                actionText.setText("Received an unsupported action in TransitionsReceiver: action="
                         + intent.getAction());
                 return;
             }
@@ -202,11 +220,17 @@ public class DashboardActivity extends AppCompatActivity {
                 for (ActivityTransitionEvent event : result.getTransitionEvents()) {
                     String activity = toActivityString(event.getActivityType());
                     String transitionType = toTransitionType(event.getTransitionType());
-                    action.setText("Transition: " + activity + " (" + transitionType + ")" + "   "
+                    actionText.setText("Transition: " + activity + " (" + transitionType + ")" + "   "
                             + new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()));
+                    if (activity.equals("IN_VEHICLE") && transitionType.equals("ENTER"))
+                    {
+                        tryRequest();
+                        if (locationOn)
+                            recordLocation();
+                    }
                 }
             }
-            
+
         }
     }
 
@@ -230,6 +254,36 @@ public class DashboardActivity extends AppCompatActivity {
             default:
                 return "UNKNOWN";
         }
+    }
+
+    private void recordLocation()
+    {
+        LocationCallback locCallback = new LocationCallback()
+        {
+            @Override
+            public void onLocationResult(LocationResult locResult)
+            {
+                if (locResult != null)
+                {
+                    for (Location location : locResult.getLocations())
+                    {
+                        locationText.setText("Lat: " + location.getLatitude() + " Long: " + location.getLongitude());
+                    }
+                }
+            }
+        };
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        mFusedLocationClient.requestLocationUpdates(locRequest, locCallback, null);
+
+    }
+
+    private void tryRequest()
+    {
+        locRequest = LocationRequest.create();
+        locRequest.setInterval(500);
+        locRequest.setFastestInterval(100);
+        locRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 }
 

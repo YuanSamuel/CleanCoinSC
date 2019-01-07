@@ -24,6 +24,15 @@
             android:layout_height="wrap_content"
             android:text="SHOP"
             android:id="@+id/toshop"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Calculating Location..."
+            android:id="@+id/locText"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
