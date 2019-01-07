@@ -13,13 +13,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <receiver android:name="TransitionBroadcastReceiver"
-            android:exported="true"
-            android:permission="com.google.android.gms.permission.ACTIVITY_RECOGNITION">
-            <intent-filter>
-                <action android:name="com.stringcheesedevs.cleancoin.ACTION_PROCESS_ACTIVITY_TRANSITIONS" />
-            </intent-filter>
-        </receiver>
         <activity android:name=".DashboardActivity">
 
             <intent-filter>

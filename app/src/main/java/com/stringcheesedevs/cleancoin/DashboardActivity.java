@@ -5,21 +5,25 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.ActivityTransition;
+import com.google.android.gms.location.ActivityTransitionEvent;
 import com.google.android.gms.location.ActivityTransitionRequest;
 import com.google.android.gms.location.ActivityTransitionResult;
 import com.google.android.gms.location.DetectedActivity;
@@ -33,10 +37,15 @@ import com.stringcheesedevs.cleancoin.Persistence.CleanCoinDAO;
 import com.stringcheesedevs.cleancoin.Persistence.CleanCoinDBHelper;
 //import com.stringcheesedevs.cleancoin.TestChain.StoreActivity;
 
+import org.w3c.dom.Text;
+
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -54,14 +63,18 @@ public class DashboardActivity extends AppCompatActivity {
     private CleanCoinDAO datasource=null;
     private TextView testmessage;
     private FusedLocationProviderClient mFusedLocationClient;
-
+    private PendingIntent mPendingIntent;
+    private TransitionsReceiver mTransitionsReceiver;
+    private final String INTENT_ACTION =
+            "com.stringcheesedevs." + "TRANSITIONS_RECEIVER_ACTION";
+    private TextView action;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         GoogleApiAvailability.getInstance().getErrorDialog(this, GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this), 1);
         setContentView(R.layout.activity_dashboard);
         tempcontext = getApplicationContext();
-
+        action = (TextView) findViewById(R.id.activityMessage);
       
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
@@ -79,7 +92,6 @@ public class DashboardActivity extends AppCompatActivity {
         //datasource.getCarStat(2004,"AUDI","A4 AVANT QUATTRO","STATION WAGON - SMALL",12);
         //Gets the complete list of Car objects
         //datasource.getAllCarData();
-        testmessage = findViewById(R.id.testmessage);
 //        testmessage.setText(datasource.getUserCar().toString());
 //
 //        toShop = (Button)findViewById(R.id.toshop);
@@ -90,52 +102,12 @@ public class DashboardActivity extends AppCompatActivity {
 //                startActivity(intent);
 //            }
 //        });
+        Intent intent = new Intent(INTENT_ACTION);
+        mPendingIntent = PendingIntent.getBroadcast(DashboardActivity.this, 0, intent, 0);
 
-        List<ActivityTransition> transitions = new ArrayList<>();
-
-        transitions.add(
-                new ActivityTransition.Builder()
-                        .setActivityType(DetectedActivity.WALKING)
-                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
-                        .build());
-
-        transitions.add(
-                new ActivityTransition.Builder()
-                        .setActivityType(DetectedActivity.WALKING)
-                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
-                        .build());
-
-        transitions.add(
-                new ActivityTransition.Builder()
-                        .setActivityType(DetectedActivity.STILL)
-                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
-                        .build());
-
-        transitions.add(
-                new ActivityTransition.Builder()
-                        .setActivityType(DetectedActivity.STILL)
-                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
-                        .build());
-
-        ActivityTransitionRequest request = new ActivityTransitionRequest(transitions);
-        Intent intent = new Intent(this, TransitionBroadcastReceiver.class);
-        intent.setAction(TransitionBroadcastReceiver.INTENT_ACTION);
-        final PendingIntent myPendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        Task<Void> task = ActivityRecognition.getClient(this).requestActivityUpdates(3000, myPendingIntent);
-        task.addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void result)
-            {
-                Log.d("ActivityRecognition", "SUCCESS (although idk what happens if its successful)");
-                myPendingIntent.cancel();
-            }
-        });
-        task.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-               e.printStackTrace();
-            }
-        });
+        mTransitionsReceiver = new TransitionsReceiver();
+        registerReceiver(mTransitionsReceiver, new IntentFilter(INTENT_ACTION));
+        setupActivityTransitions();
     }
 
     public ArrayList<Car> loadCarsData() throws IOException {
@@ -171,6 +143,92 @@ public class DashboardActivity extends AppCompatActivity {
             }
             // other 'case' lines to check for other
             // permissions this app might request.
+        }
+    }
+    private void setupActivityTransitions() {
+        List<ActivityTransition> transitions = new ArrayList<>();
+        transitions.add(
+                new ActivityTransition.Builder()
+                        .setActivityType(DetectedActivity.IN_VEHICLE)
+                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
+                        .build());
+        transitions.add(
+                new ActivityTransition.Builder()
+                        .setActivityType(DetectedActivity.IN_VEHICLE)
+                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
+                        .build());
+        transitions.add(
+                new ActivityTransition.Builder()
+                        .setActivityType(DetectedActivity.STILL)
+                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
+                        .build());
+        transitions.add(
+                new ActivityTransition.Builder()
+                        .setActivityType(DetectedActivity.STILL)
+                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
+                        .build());
+        ActivityTransitionRequest request = new ActivityTransitionRequest(transitions);
+
+        // Register for Transitions Updates.
+        Task<Void> task =
+                ActivityRecognition.getClient(this)
+                        .requestActivityTransitionUpdates(request, mPendingIntent);
+        task.addOnSuccessListener(
+                new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void result) {
+                        Log.i("TransitionsBroadcast", "Transitions Api was successfully registered.");
+                    }
+                });
+        task.addOnFailureListener(
+                new OnFailureListener() {
+                    @Override
+                    public void onFailure(Exception e) {
+                        Log.e("TransitionsBroadcast", "Transitions Api could not be registered: " + e);
+                    }
+                });
+    }
+    public class TransitionsReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (!TextUtils.equals(INTENT_ACTION, intent.getAction())) {
+                action.setText("Received an unsupported action in TransitionsReceiver: action="
+                        + intent.getAction());
+                return;
+            }
+            if (ActivityTransitionResult.hasResult(intent)) {
+                ActivityTransitionResult result = ActivityTransitionResult.extractResult(intent);
+                for (ActivityTransitionEvent event : result.getTransitionEvents()) {
+                    String activity = toActivityString(event.getActivityType());
+                    String transitionType = toTransitionType(event.getTransitionType());
+                    action.setText("Transition: " + activity + " (" + transitionType + ")" + "   "
+                            + new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()));
+                }
+            }
+            
+        }
+    }
+
+    private static String toActivityString(int activity) {
+        switch (activity) {
+            case DetectedActivity.STILL:
+                return "STILL";
+            case DetectedActivity.IN_VEHICLE:
+                return "IN_VEHICLE";
+            default:
+                return "UNKNOWN";
+        }
+    }
+
+    private static String toTransitionType(int transitionType) {
+        switch (transitionType) {
+            case ActivityTransition.ACTIVITY_TRANSITION_ENTER:
+                return "ENTER";
+            case ActivityTransition.ACTIVITY_TRANSITION_EXIT:
+                return "EXIT";
+            default:
+                return "UNKNOWN";
         }
     }
 }
